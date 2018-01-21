@@ -1,0 +1,26 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "nginx-ingress",
+    "namespace": "default",
+    "annotations": {
+        "service.beta.kubernetes.io/external-traffic": "OnlyLocal"
+    }
+  },
+  "spec": {
+    "ports": [
+        {"port": 80, "name": "http", "nodePort": 31111},
+        {"port": 443, "name": "https", "nodePort": 31112},
+        {"port": 10254, "name": "healthcheck", "nodePort": 31113},
+        {"port": 18080, "name": "status", "nodePort": 31114}],
+    "selector": {
+      "app": "nginx-ingress-lb"
+    },
+    "type": "NodePort",
+      "externalIPs": [
+      "13.127.110.24",
+      "172.31.16.157"
+    ]
+  }
+}

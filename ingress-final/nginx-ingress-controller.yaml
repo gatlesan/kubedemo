@@ -1,0 +1,96 @@
+{
+    "kind": "Deployment",
+    "apiVersion": "extensions/v1beta1",
+    "metadata": {
+        "name": "nginx-ingress-controller",
+        "namespace": "default",
+        "labels": {
+            "app": "nginx-ingress-lb"
+        }
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "matchLabels": {
+                "app": "nginx-ingress-lb"
+            }
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "nginx-ingress-lb"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "name": "nginx-ingress-controller",
+                        "image": "gcr.io/google_containers/nginx-ingress-controller:0.9.0-beta.11",
+                        "ports": [
+                            {
+                                "containerPort": 80
+                            },
+                            {
+                                "containerPort": 443
+                            },
+                            {
+                                "containerPort": 10254
+                            },
+                            {
+                                "containerPort": 18080
+                            }
+
+                        ],
+                        "livenessProbe": {
+                            "httpGet": {
+                                "path": "/healthz",
+                                "port": 10254
+                            },
+                            "initialDelaySeconds": 10,
+                            "timeoutSeconds": 5
+                        },
+                        "readinessProbe": {
+                            "httpGet": {
+                                "path": "/healthz",
+                                "port": 10254
+                            }
+                        },
+                        "args": [
+                            "/nginx-ingress-controller",
+                            "--apiserver-host=http://13.127.110.24:8002",
+                            "--configmap=$(POD_NAMESPACE)/nginx-ingress-custom-configuration",
+                            "--default-backend-service=$(POD_NAMESPACE)/default-http-backend",
+                            "--default-ssl-certificate=$(POD_NAMESPACE)/my-tls-certificate"
+                        ],
+                        "env": [
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {"fieldRef": {"fieldPath": "metadata.name"}}
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {"fieldRef": {"fieldPath": "metadata.namespace"}}
+                            }
+						],
+                        "resources": {
+                            "requests": {
+                                "cpu": "500m",
+                                "memory": "1Gi"
+                            },
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "1Gi"
+                            }
+
+                        },
+                        "imagePullPolicy": "Always"
+                    }
+                ],
+                "restartPolicy": "Always"
+            }
+        },
+        "strategy": {
+            "type": "Recreate"
+        }
+    }
+}

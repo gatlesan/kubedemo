@@ -1,0 +1,23 @@
+1. Create default-http-backend POD.
+2. Expose default-http-backend as below.
+3. Create nginx-ingress-controller (remeber to change the api server)
+4. Create nginx-ingress-service 
+5. Finally Create Ingress Obj
+
+
+
+
+--Create Node port with external IP's
+kubectl expose rc default-http-backend --port=8088 --target-port=8080 --name=default-http-backend
+
+
+
+[root@ip-172-31-16-157 ec2-user]# kubectl get ing
+NAME         HOSTS                                          ADDRESS         PORTS     AGE
+my-ingress   ip-172-31-16-157.ap-south-1.compute.internal   172.31.16.157   80        59m
+
+
+
+
+
+https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e
